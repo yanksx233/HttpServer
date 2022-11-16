@@ -58,7 +58,7 @@ void Logger::Impl::formatTime() {
 }
 
 void Logger::Impl::filenameLine() {
-  stream_ << basename_ << ':' << line_ << " - ";
+  stream_ << basename(basename_.c_str()) << ':' << line_ << " - ";
 }
 
 
