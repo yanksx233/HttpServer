@@ -32,3 +32,16 @@ cd HttpServer && bash ./build.sh && cd ..
 ./build/Debug/HttpServer
 ```
 
+
+
+## Summary
+
+| language     | files |  code | comment | blank | total |
+| :----------- | ----: | ----: | ------: | ----: | ----: |
+| CSS          |     5 | 3,377 |      60 |   650 | 4,087 |
+| C++          |    45 | 3,279 |      54 |   774 | 4,107 |
+| HTML         |    12 |   706 |     112 |   145 |   963 |
+| XML          |     1 |   655 |       0 |     0 |   655 |
+| JavaScript   |     7 |    60 |      45 |    20 |   125 |
+| CMake        |     2 |    40 |       0 |     9 |    49 |
+| Shell Script |     1 |     9 |       1 |     3 |    13 |
