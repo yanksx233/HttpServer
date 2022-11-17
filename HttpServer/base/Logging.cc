@@ -51,7 +51,7 @@ void Logger::Impl::formatTime() {
     int n = snprintf(t_time, sizeof(t_time), "%4d-%02d-%02d %02d:%02d:%02d",  // 年-月-日 时:分:秒
                      p_tm->tm_year+1900, p_tm->tm_mon+1, p_tm->tm_mday, 
                      p_tm->tm_hour, p_tm->tm_min, p_tm->tm_sec);
-    assert(n == 19);
+    assert(n == 19); (void)n;
   }
   snprintf(t_time+19, sizeof(t_time)-19, ",%06ld", now.tv_usec);
   stream_ << t_time << " - ";

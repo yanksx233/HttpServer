@@ -18,7 +18,7 @@ int main() {
   server.setConnectionCallback(onConnection);
   server.setMessageCallback(onMessage);
 
-  server.setThreadNum(1);
+  server.setThreadNum(6);
   server.start();
   loop.loop();
 }
