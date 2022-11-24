@@ -151,7 +151,7 @@ void Acceptor::listen() {
   acceptChannel_.enableReading();
 }
 
-void Acceptor::handleRead() {  // TODO: 一次读完所有等待接受的连接，不然连接较多时每次epoll只读一个，且一直被唤醒，效率低。
+void Acceptor::handleRead() {  // TODO: 一次读完所有等待接受的连接，不然连接较多时每次epoll只读一个，且LT模式下一直被唤醒，效率低。
   loop_->assertInLoopThread();
 
   InetAddress peerAddr;
