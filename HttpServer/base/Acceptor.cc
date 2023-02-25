@@ -91,9 +91,9 @@ int Socket::accept(InetAddress* p_peerAddr) {
   if (connfd >= 0) {
     p_peerAddr->setSockaddr(addr);
   }
-  else {
-    LOG_SYSERR << "Socket::accept()";
-  }
+  // else {
+  //   LOG_SYSERR << "Socket::accept()";
+  // }
   return connfd;
 }
 
@@ -154,29 +154,37 @@ void Acceptor::listen() {
 void Acceptor::handleRead() {  // TODO: 一次读完所有等待接受的连接，不然连接较多时每次epoll只读一个，且LT模式下一直被唤醒，效率低。
   loop_->assertInLoopThread();
 
-  InetAddress peerAddr;
-  int connfd = acceptSocket_.accept(&peerAddr);
-  if (connfd >= 0) {
-    if (newConnectionCallback_) {
-      newConnectionCallback_(connfd, peerAddr);
-    }
-    else {
-      if (::close(connfd) < 0) {
-        LOG_SYSERR << "Socket::handleRead(), close connected fd error";
+  // UPDATA (2023.2.25 循环 accept 到无新连接为止)
+  while (true) {
+    InetAddress peerAddr;
+    int connfd = acceptSocket_.accept(&peerAddr);
+    if (connfd >= 0) {
+      if (newConnectionCallback_) {
+        newConnectionCallback_(connfd, peerAddr);
+      }
+      else {
+        if (::close(connfd) < 0) {
+          LOG_SYSERR << "Socket::handleRead(), close connected fd error";
+        }
       }
     }
-  }
-  else {
-    if (errno == EMFILE) {
-      ::close(idleFd_);  // 关闭后可能被其他线程抢占fd
-      idleFd_ = ::accept(acceptSocket_.fd(), nullptr, nullptr);
-      // assert(idleFd_ >= 0);
-      ::close(idleFd_);
-      idleFd_ = ::open("/dev/null", O_RDONLY | O_CLOEXEC);
-      // assert(idleFd_ >= 0);
-    }
     else {
-      LOG_SYSERR << "Socket::handleRead(), accept error";
+      if (errno == EAGAIN) {
+
+      }
+      else if (errno == EMFILE) {
+        ::close(idleFd_);  // 关闭后可能被其他线程抢占fd
+        idleFd_ = ::accept(acceptSocket_.fd(), nullptr, nullptr);
+        // assert(idleFd_ >= 0);
+        ::close(idleFd_);
+        idleFd_ = ::open("/dev/null", O_RDONLY | O_CLOEXEC);
+        // assert(idleFd_ >= 0);
+      }
+      else {
+        LOG_SYSERR << "Socket::handleRead(), accept error";
+      }
+      break;
     }
   }
+  
 }

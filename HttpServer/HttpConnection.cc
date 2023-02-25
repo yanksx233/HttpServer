@@ -25,7 +25,7 @@ void onConnection(const TcpConnectionPtr& conn) {
     httpData->setTimerId(conn->getLoop()->runAfter(std::bind(timeoutCallback, conn), 60));
     conn->setContext(httpData);
   }
-  else {
+  else {  // timeoutCallback 会忽略已经关闭的 TcpConnection，这里不移除会造成 conn 延迟析构，高并发时会有过多文件被打开导致 core dump
     HttpConnectionPtr httpData = boost::any_cast<HttpConnectionPtr>(conn->getContext());
     conn->getLoop()->cancel(httpData->getTimerId());
     LOG_DEBUG << conn->name() << " is down";

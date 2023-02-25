@@ -156,7 +156,7 @@ void AsyncLogging::stop() {
   thread_.join();
 }
 
-void AsyncLogging::append(const char* logline, int len) {
+void AsyncLogging::append(const char* logline, int len) {  // 前端生成日志
   MutexLockGuard lock(mutex_);
   if (currentBuffer_->avail() > len) {
     currentBuffer_->append(logline, len);
@@ -174,7 +174,7 @@ void AsyncLogging::append(const char* logline, int len) {
   }
 }
 
-void AsyncLogging::threadFunc() {
+void AsyncLogging::threadFunc() {  // 后端线程写日志到文件
   assert(running_ == true);
   LogFile file(basename_, rollSize_, false);
   std::unique_ptr<Buffer> newBuffer1(new Buffer);
