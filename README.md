@@ -2,7 +2,7 @@
 
 ## 简介
 
-自行实现的基于 muduo 的 HTTP 服务器，支持 GET、POST（未实现数据库） 请求。
+自行实现的基于 muduo 的 HTTP 服务器，支持 GET、POST（未连接数据库） 请求。
 
 采用 Reactor 模式
 
