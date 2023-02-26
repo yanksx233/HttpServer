@@ -45,6 +45,9 @@ class TcpServer : noncopyable {
   std::unique_ptr<EventLoopThreadPool> threadPool_;
   ThreadInitCallback threadInitCallback_;
   int nextConnId_;
+
+  int currentNumConnections_;
+  const int kMaxNumConnections = 8192;
 };
 
 #endif  // REACTOR_BASE_TCPSERVER_H

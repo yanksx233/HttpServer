@@ -409,8 +409,10 @@ void HttpConnection::makeResponseHeader(Buffer* outputBuf) {
 
 void HttpConnection::makeResponseBody(Buffer* outputBuf) {
   int fd = ::open((kSourceDir+path_).c_str(), O_RDONLY);
-  if (fd < 0) {
-    LOG_SYSFATAL << "HttpConnection::makeResponseBody(), open error";
+  if (fd < 0) {  // 高并发时会导致打开过多文件 FIXME: 解决文件打开过多问题
+    // LOG_SYSFATAL << "HttpConnection::makeResponseBody(), open error";
+    LOG_SYSERR << "HttpConnection::makeResponseBody(), open error";
+    return;
   }
 
   void* mmapRet = ::mmap(nullptr, requestFileStat_.st_size, PROT_READ, MAP_PRIVATE, fd, 0);

@@ -75,11 +75,19 @@ void TcpServer::start() {
 
 void TcpServer::newConnection(int sockfd, const InetAddress& peerAddr) {
   loop_->assertInLoopThread();
+
+  if (currentNumConnections_ > kMaxNumConnections) {
+    ::close(sockfd);
+    LOG_TRACE << "TcpServer::newConnection: too many connections, close coming socket";
+    return;
+  }
+  ++currentNumConnections_;
+
   EventLoop* ioLoop = threadPool_->getNextLoop();
 
   char buf[64];
   snprintf(buf, sizeof(buf), "-%s#%d", ipPort_.c_str(), nextConnId_);
-  ++nextConnId_;  // FIXME: 没有--，不是现有连接数，是运行以来总连接数
+  ++nextConnId_;  // FIXME: 没有--，不是现有连接数，是运行以来总连接数，不能直接--这个，否则会导致 connections_ 中不同的连接有相同的 key
   std::string connName = name_ + buf;
 
   InetAddress localAddr(getLocalAddr(sockfd));
@@ -108,4 +116,5 @@ void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& conn) {
 
   EventLoop* ioLoop = conn->getLoop();
   ioLoop->queueInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
+  --currentNumConnections_;
 }
